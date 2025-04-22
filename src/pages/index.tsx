@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDebounce, useDebouncedCallback } from "use-debounce";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -68,14 +69,23 @@ export default function Home() {
   const [fruitList, setFruitList] = useState<Data[]>([]);
   const [vegetableList, setVegetableList] = useState<Data[]>([]);
 
-  const setDataByType = (data: Data, lIndex: number) => {
+  const setDataByType = (data: Data) => {
     if (data.type === "Fruit") {
       setFruitList((prevState) => [...prevState, data]);
     } else {
       setVegetableList((prevState) => [...prevState, data]);
     }
 
-    setDataList(dataList.filter((_, index) => index != lIndex));
+    setDataList(dataList.filter((lData) => lData != data));
+
+    setTimeout(() => {
+      setDataList((prev) => [...prev, data]);
+      if (data.type === "Fruit") {
+        setFruitList((prev) => prev.filter((fData) => fData.name !== data.name));
+      } else {
+        setVegetableList((prev) => prev.filter((vData) => vData.name !== data.name));
+      }
+    }, 5000);
   };
 
   const setDataToList = (data: Data, index: number) => {
@@ -86,6 +96,7 @@ export default function Home() {
       setVegetableList(vegetableList.filter((_, vIndex) => vIndex != index));
     }
   };
+
   return (
     <div
       className={`${geistSans.className} ${geistMono.className} font-[family-name:var(--font-geist-sans)] min-h-screen flex items-center justify-center p-4`}
@@ -96,7 +107,9 @@ export default function Home() {
             <button
               key={index}
               className="border px-4 py-2 rounded hover:bg-gray-100"
-              onClick={() => setDataByType(data, index)}
+              onClick={() => {
+                setDataByType(data);
+              }}
             >
               {data.name}
             </button>
