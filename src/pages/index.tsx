@@ -1,6 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
-import { useEffect, useState } from "react";
-import { useDebounce, useDebouncedCallback } from "use-debounce";
+import { useState } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
