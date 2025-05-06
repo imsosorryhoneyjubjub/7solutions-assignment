@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { fetchAndTransformUsers, UserTransform } from "@/services/users";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -67,6 +68,7 @@ export default function Home() {
   const [dataList, setDataList] = useState<Data[]>(rawData);
   const [fruitList, setFruitList] = useState<Data[]>([]);
   const [vegetableList, setVegetableList] = useState<Data[]>([]);
+  const [users, setUsers] = useState<UserTransform | []>([]);
 
   const setDataByType = (data: Data) => {
     if (data.type === "Fruit") {
@@ -75,7 +77,7 @@ export default function Home() {
       setVegetableList((prevState) => [...prevState, data]);
     }
 
-    setDataList(dataList.filter((lData) => lData != data));
+    setDataList(dataList.filter((lData) => lData.name != data.name));
 
     setTimeout(() => {
       setDataList((prev) => [...prev, data]);
@@ -95,6 +97,16 @@ export default function Home() {
       setVegetableList(vegetableList.filter((_, vIndex) => vIndex != index));
     }
   };
+
+  useEffect(() => {
+    fetchAndTransformUsers().then((res) => {
+      if (!!res) {
+        setUsers(res);
+      }
+    });
+  }, []);
+
+  console.log(users);
 
   return (
     <div
